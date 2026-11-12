@@ -1,64 +1,64 @@
 # HereList
 
-**An open-source YouTube Music client for Windows and Android, built with Kotlin Multiplatform.**
+**Открытый музыкальный клиент YouTube Music для Windows и Android, разработанный на Kotlin Multiplatform.**
 
-HereList aims to bring a modern, consistent music listening experience to desktop and mobile, with a custom **Material Design 3** interface.
+Цель HereList — предоставить современный и единообразный интерфейс для прослушивания музыки на компьютерах и мобильных устройствах. В основе дизайна — собственная реализация **Material Design 3**.
 
-> **Project status:** Early development / planning. Features and platform support are subject to change.
+> **Статус проекта:** ранняя стадия разработки и планирования. Функции и поддерживаемые платформы могут измениться.
 
-## ✨ Vision
+## Идея проекта
 
-HereList is a community-oriented, open-source music client inspired by projects such as [Metrolist](https://github.com/mostafaalagamy/Metrolist), with its own interface, architecture, and implementation.
+HereList — это музыкальный клиент с открытым исходным кодом, вдохновлённый такими проектами, как [Metrolist](https://github.com/mostafaalagamy/Metrolist), но с собственным интерфейсом, архитектурой и реализацией.
 
-YouTube Music is the planned music provider. HereList is not intended to be a multi-provider aggregator.
+В качестве музыкального сервиса планируется использовать YouTube Music. HereList не задуман как агрегатор нескольких музыкальных сервисов.
 
-### Planned features
+### Планируемые возможности
 
-- 🔎 Search for tracks, albums, and artists
-- 🎵 Music playback and queue management
-- 📚 Library, favorites, playlists, and listening history
-- 🎨 Custom Material Design 3 interface
-- 📝 Song lyrics, including time-synchronized LRC lyrics where available
-- ☁️ Google account integration for supported personalization and sync features
-- 💻 Desktop experience for Windows
-- 📱 Mobile experience for Android
-- 🐧 Linux support planned for a later stage
+- Поиск треков, альбомов и исполнителей
+- Воспроизведение музыки и управление очередью
+- Медиатека, избранное, плейлисты и история прослушивания
+- Собственный интерфейс на Material Design 3
+- Тексты песен, включая синхронизированные тексты в формате LRC, если они доступны
+- Интеграция с аккаунтом Google для поддерживаемых функций персонализации и синхронизации
+- Версия для компьютеров под управлением Windows
+- Версия для мобильных устройств на Android
+- Поддержка Linux в планах на более поздний этап
 
-Offline playback and downloads will be implemented only for audio that the app is permitted to store and play offline. HereList will not bypass DRM, access controls, or YouTube Music subscription restrictions.
+Офлайн-воспроизведение и загрузка будут реализованы только для аудио, которое приложению разрешено сохранять и воспроизводить без подключения к интернету. HereList не будет обходить DRM, механизмы контроля доступа или ограничения подписки YouTube Music.
 
-## 🧰 Planned technology
+## Планируемые технологии
 
-| Area | Technology |
+| Область | Технология |
 | --- | --- |
-| Language | Kotlin |
-| Multiplatform | Kotlin Multiplatform |
-| UI | Compose Multiplatform |
-| Design system | Material Design 3 |
-| Networking | Ktor |
-| Async operations | Kotlin Coroutines and Flow |
-| Local persistence | Room / platform-compatible storage |
-| Build system | Gradle |
+| Язык программирования | Kotlin |
+| Мультиплатформенная разработка | Kotlin Multiplatform |
+| Интерфейс | Compose Multiplatform |
+| Система дизайна | Material Design 3 |
+| Сетевые запросы | Ktor |
+| Асинхронные операции | Kotlin Coroutines и Flow |
+| Локальное хранение данных | Room или совместимые с платформами решения |
+| Система сборки | Gradle |
 
-The exact dependencies and module boundaries may change as development progresses.
+Точный набор зависимостей и структура модулей могут измениться в процессе разработки.
 
-## 🖥️ Platform roadmap
+## План развития платформ
 
-| Platform | Priority | Status |
+| Платформа | Приоритет | Статус |
 | --- | --- | --- |
-| Windows | First release | Planned |
-| Android | First release | Planned |
-| Linux | Later release | Planned |
+| Windows | Первый релиз | Запланировано |
+| Android | Первый релиз | Запланировано |
+| Linux | Более поздний релиз | Запланировано |
 
-## 🏗️ Development
+## Разработка
 
-The project is currently in its early planning stage. Setup instructions, build requirements, architecture notes, and contribution guidelines will be added as the initial project structure is implemented.
+Сейчас проект находится на ранней стадии планирования. Инструкции по настройке окружения, сборке, архитектуре и участию в разработке появятся после создания первоначальной структуры проекта.
 
-## ⚖️ Disclaimer
+## Отказ от ответственности
 
-HereList is an independent, community-developed project and is not affiliated with, endorsed by, or sponsored by Google or YouTube.
+HereList — независимый проект, разрабатываемый сообществом. Он не связан с Google или YouTube, не одобрен и не спонсируется этими компаниями.
 
-YouTube and YouTube Music are trademarks of Google LLC. Use of YouTube Music-related services and content remains subject to their applicable terms and policies. Features depend on supported access methods and may change.
+YouTube и YouTube Music являются товарными знаками Google LLC. Использование связанных с YouTube Music сервисов и материалов регулируется соответствующими условиями и правилами. Доступность функций зависит от поддерживаемых способов взаимодействия с сервисом и может изменяться.
 
-## 📄 License
+## Лицензия
 
-A project license has not been selected yet. Until a license is added to this repository, all rights are reserved by the copyright holder.
+Лицензия проекта пока не выбрана. До её добавления в репозиторий все права принадлежат правообладателю.
