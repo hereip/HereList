@@ -1,6 +1,9 @@
 package com.hereip.herelist
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +35,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +51,7 @@ import androidx.compose.ui.unit.sp
 import com.hereip.herelist.data.DemoTracks
 import com.hereip.herelist.data.Track
 
-private val HereListColorScheme: ColorScheme = darkColorScheme(
+private val HereListDarkColorScheme: ColorScheme = darkColorScheme(
     primary = Color(0xFFB8C4FF),
     onPrimary = Color(0xFF18234D),
     secondary = Color(0xFFB7C9C7),
@@ -58,20 +62,40 @@ private val HereListColorScheme: ColorScheme = darkColorScheme(
     onSurfaceVariant = Color(0xFFC4C5D0)
 )
 
+private val HereListLightColorScheme: ColorScheme = lightColorScheme(
+    primary = Color(0xFF344B9A),
+    onPrimary = Color.White,
+    secondary = Color(0xFF526A68),
+    background = Color(0xFFF7F7FA),
+    surface = Color(0xFFFFFFFF),
+    surfaceVariant = Color(0xFFE9EAF0),
+    onSurface = Color(0xFF191A20),
+    onSurfaceVariant = Color(0xFF5E606B)
+)
+
 @Composable
 fun App() {
-    MaterialTheme(colorScheme = HereListColorScheme) {
+    var isDarkTheme by remember { mutableStateOf(true) }
+    val colorScheme = if (isDarkTheme) HereListDarkColorScheme else HereListLightColorScheme
+
+    MaterialTheme(colorScheme = colorScheme) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            MusicHomeScreen()
+            MusicHomeScreen(
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = { isDarkTheme = !isDarkTheme }
+            )
         }
     }
 }
 
 @Composable
-private fun MusicHomeScreen() {
+private fun MusicHomeScreen(
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit
+) {
     var selectedTab by remember { mutableStateOf("Главная") }
     var searchQuery by remember { mutableStateOf("") }
     var currentTrack by remember { mutableStateOf<Track?>(null) }
@@ -101,16 +125,31 @@ private fun MusicHomeScreen() {
                 ) {
                     Spacer(Modifier.height(24.dp))
 
-                    Text(
-                        text = "HereList",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Твоя музыка. Твоё пространство.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = "HereList",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Твоя музыка. Твоё пространство.",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        IconButton(onClick = onToggleTheme) {
+                            Text(
+                                text = if (isDarkTheme) "☀" else "☾",
+                                color = MaterialTheme.colorScheme.primary,
+                                fontSize = 23.sp
+                            )
+                        }
+                    }
 
                     Spacer(Modifier.height(24.dp))
 
@@ -271,6 +310,7 @@ private fun AlbumCard(
     Card(
         modifier = Modifier
             .width(172.dp)
+            .animateContentSize(animationSpec = tween(durationMillis = 220))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -314,6 +354,7 @@ private fun TrackRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .animateContentSize(animationSpec = tween(durationMillis = 180))
             .clickable(onClick = onClick)
             .padding(vertical = 9.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -380,22 +421,27 @@ private fun MiniPlayer(
                 Text("HL", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
 
-            Column(
+            Crossfade(
+                targetState = track,
+                animationSpec = tween(durationMillis = 220),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 12.dp)
-            ) {
-                Text(
-                    text = track?.title ?: "Ничего не воспроизводится",
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1
-                )
-                Text(
-                    text = track?.artist ?: "Выбери трек из списка",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1
-                )
+                    .padding(horizontal = 12.dp),
+                label = "mini-player-track"
+            ) { animatedTrack ->
+                Column {
+                    Text(
+                        text = animatedTrack?.title ?: "Ничего не воспроизводится",
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1
+                    )
+                    Text(
+                        text = animatedTrack?.artist ?: "Выбери трек из списка",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1
+                    )
+                }
             }
 
             IconButton(onClick = {}) {
