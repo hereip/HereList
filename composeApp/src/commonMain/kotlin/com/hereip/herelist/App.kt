@@ -23,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.IconButton
@@ -33,6 +34,8 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -76,7 +79,10 @@ private val HereListLightColorScheme: ColorScheme = lightColorScheme(
 @Composable
 fun App() {
     var isDarkTheme by remember { mutableStateOf(true) }
-    val colorScheme = if (isDarkTheme) HereListDarkColorScheme else HereListLightColorScheme
+    var accentColor by remember { mutableStateOf(Color(0xFFB8C4FF)) }
+    var animationsEnabled by remember { mutableStateOf(true) }
+    val baseColorScheme = if (isDarkTheme) HereListDarkColorScheme else HereListLightColorScheme
+    val colorScheme = baseColorScheme.copy(primary = accentColor)
 
     MaterialTheme(colorScheme = colorScheme) {
         Surface(
@@ -85,7 +91,11 @@ fun App() {
         ) {
             MusicHomeScreen(
                 isDarkTheme = isDarkTheme,
-                onToggleTheme = { isDarkTheme = !isDarkTheme }
+                onToggleTheme = { isDarkTheme = !isDarkTheme },
+                accentColor = accentColor,
+                onAccentColorChange = { accentColor = it },
+                animationsEnabled = animationsEnabled,
+                onAnimationsChange = { animationsEnabled = it }
             )
         }
     }
@@ -94,8 +104,13 @@ fun App() {
 @Composable
 private fun MusicHomeScreen(
     isDarkTheme: Boolean,
-    onToggleTheme: () -> Unit
+    onToggleTheme: () -> Unit,
+    accentColor: Color,
+    onAccentColorChange: (Color) -> Unit,
+    animationsEnabled: Boolean,
+    onAnimationsChange: (Boolean) -> Unit
 ) {
+    var showSettings by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf("Главная") }
     var searchQuery by remember { mutableStateOf("") }
     var currentTrack by remember { mutableStateOf<Track?>(null) }
@@ -142,9 +157,9 @@ private fun MusicHomeScreen(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
-                        IconButton(onClick = onToggleTheme) {
+                        IconButton(onClick = { showSettings = true }) {
                             Text(
-                                text = if (isDarkTheme) "☀" else "☾",
+                                text = "⚙",
                                 color = MaterialTheme.colorScheme.primary,
                                 fontSize = 23.sp
                             )
@@ -227,7 +242,8 @@ private fun MusicHomeScreen(
 
                 MiniPlayer(
                     track = currentTrack,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    animationsEnabled = animationsEnabled
                 )
 
                 if (!isWideScreen) {
@@ -239,6 +255,81 @@ private fun MusicHomeScreen(
             }
         }
     }
+
+    if (showSettings) {
+        SettingsDialog(
+            isDarkTheme = isDarkTheme,
+            onToggleTheme = onToggleTheme,
+            accentColor = accentColor,
+            onAccentColorChange = onAccentColorChange,
+            animationsEnabled = animationsEnabled,
+            onAnimationsChange = onAnimationsChange,
+            onDismiss = { showSettings = false }
+        )
+    }
+}
+
+@Composable
+private fun SettingsDialog(
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
+    accentColor: Color,
+    onAccentColorChange: (Color) -> Unit,
+    animationsEnabled: Boolean,
+    onAnimationsChange: (Boolean) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Настройки HereList") },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Text("ВНЕШНИЙ ВИД", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Тёмная тема", fontWeight = FontWeight.Medium)
+                        Text("Переключение светлой и тёмной темы", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Switch(checked = isDarkTheme, onCheckedChange = { onToggleTheme() })
+                }
+                Text("Цвет оформления", fontWeight = FontWeight.Medium)
+                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    listOf(Color(0xFF344B9A), Color(0xFF8B5CF6), Color(0xFF16866A), Color(0xFFD05B78), Color(0xFFCC8735)).forEach { color ->
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .background(color, RoundedCornerShape(50))
+                                .clickable { onAccentColorChange(color) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (accentColor == color) Text("✓", color = Color.White, fontSize = 15.sp)
+                        }
+                    }
+                }
+                Text("АНИМАЦИИ", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Плавные переходы", fontWeight = FontWeight.Medium)
+                        Text("Анимация смены треков", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Switch(checked = animationsEnabled, onCheckedChange = onAnimationsChange)
+                }
+                Text("ВОСПРОИЗВЕДЕНИЕ", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text("Настройки плеера появятся после реализации воспроизведения.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("О ПРИЛОЖЕНИИ", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text("HereList", fontWeight = FontWeight.SemiBold)
+                Text("Версия: 0.1.0 (ранняя разработка)", style = MaterialTheme.typography.bodySmall)
+                Text("Открытый проект. Лицензия MIT.", style = MaterialTheme.typography.bodySmall)
+                Text("GitHub: github.com/hereip/HereList", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Готово") } }
+    )
 }
 
 @Composable
@@ -398,7 +489,8 @@ private fun TrackRow(
 @Composable
 private fun MiniPlayer(
     track: Track?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    animationsEnabled: Boolean
 ) {
     Surface(
         modifier = modifier,
@@ -423,7 +515,7 @@ private fun MiniPlayer(
 
             Crossfade(
                 targetState = track,
-                animationSpec = tween(durationMillis = 220),
+                animationSpec = tween(durationMillis = if (animationsEnabled) 220 else 0),
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 12.dp),
