@@ -11,3 +11,9 @@ dependencies {
     implementation(project(":composeApp"))
     implementation(compose.desktop.currentOs)
 }
+
+compose.desktop {
+    application {
+        mainClass = "com.hereip.herelist.desktop.MainKt"
+    }
+}
